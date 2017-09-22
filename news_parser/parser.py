@@ -1,12 +1,13 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import csv
+import json
+import os
 
 import requests
 from lxml import html
 
-from log_configs import LOGGER
+from log_configs import LOGGER, BASE_DIR
 
 
 class News(object):
@@ -88,7 +89,6 @@ class News(object):
         try:
             tree = html.fromstring(page)
             links = tree.xpath(path)
-            print(links)
         except Exception:
             LOGGER.warning("Cant scrap links for webpage, xpath was: " + path)
         return links
@@ -168,23 +168,36 @@ class News(object):
         return images
 
     @staticmethod
-    def convert_news_array_to_csv(newses, path, filename="news_data"):
+    def serialize_news_array_as_json(newses, path=os.path.join(BASE_DIR, "tmp"), filename="news_data.json"):
         """
-        Serialize news array to cvs, create new cvs file for given path with filename.
+        Serialize news array to json, create new json file for given path with filename.
         :param newses: array of news.
-        :param path: path to directory for storing cvs file. Default is base directory of this script.
-        :param filename: filename of cvs file.
+        :param path: path to directory for storing json file. Default is base directory of script tmp folder.
+        If directory does not exist method will create it.
+        :param filename: filename of json file. If extension ommited, add it.
         :return: true if successfully serialize array.
         """
+        if not os.path.exists(path):
+            LOGGER.info("Directory does not exist, creating directory: " + path)
+            os.makedirs(path)
+        if ".json" not in filename:
+            LOGGER.info("Filename: {} does not contain extension .json. Adding extension.".format(filename))
+            filename += ".json"
+        with open(os.path.join(path, filename), "w".encode("utf-8")) as f:
+            json_string = json.dumps([ob.__dict__ for ob in newses])
+            f.write(json_string)
 
+    @staticmethod
+    def read_file(path=os.path.join(BASE_DIR, "tmp/news_data.json")):
+        """
+        Read file as json string.
+        :param path: path to file. Default is script dir + tmp/news_data.json
+        :return: file content as json string.
+        """
+        content = ""
+        with open(path, "r".encode("utf-8")) as f:
+            content = f.read()
+        return json.loads(content)
 
 
 if __name__ == '__main__':
-    all_news_urls = News.WEBSITE_URL + "/article/us-mexico-quake/mexico-rescuers-in-race-to-find-trapped-survivors-48-hours-after-quake-idUSKCN1BW0YK"
-    # paramss = {
-    #     "view": "page",
-    #     "page": "1",
-    #     "pageSize": "10"
-    #
-    # }
-    r = requests.get(all_news_urls)
