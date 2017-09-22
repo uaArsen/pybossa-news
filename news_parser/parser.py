@@ -7,7 +7,7 @@ import os
 import requests
 from lxml import html
 
-from log_configs import LOGGER, BASE_DIR
+from configs.main_configs import LOGGER, BASE_DIR
 
 
 class News(object):
@@ -64,7 +64,6 @@ class News(object):
                 return newses
             newses_page = r.content
             current_page += 1
-            print(current_page, len(newses))
             for link in News.__get_links_to_news(newses_page):
                 link = News.WEBSITE_URL + link
                 r = requests.get(link)
@@ -201,4 +200,4 @@ class News(object):
 
 
 if __name__ == '__main__':
-    News.serialize_news_array_as_json(News.parse_reuters_com_website(), filename="big_archive.json")
+    pass
