@@ -35,7 +35,6 @@ def load_tasks(project_id, question="What is news tonality?"):
     for obj in data:
         obj["question"] = question
         result = pbclient.create_task(project_id, obj, n_answers=REDUNDANCY)
-        print(result)
         if isinstance(result, {}.__class__) \
                 and result["status"] == "failed" \
                 and result["exception_cls"] == "TooManyRequests":
