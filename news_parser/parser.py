@@ -64,6 +64,7 @@ class News(object):
                 return newses
             newses_page = r.content
             current_page += 1
+            print(current_page, len(newses))
             for link in News.__get_links_to_news(newses_page):
                 link = News.WEBSITE_URL + link
                 r = requests.get(link)
@@ -194,10 +195,10 @@ class News(object):
         :param path: path to file. Default is script dir + tmp/news_data.json
         :return: file content as json string.
         """
-        content = ""
         with open(path, "r".encode("utf-8")) as f:
             content = f.read()
         return json.loads(content)
 
 
 if __name__ == '__main__':
+    News.serialize_news_array_as_json(News.parse_reuters_com_website(), filename="big_archive.json")
