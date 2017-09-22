@@ -56,4 +56,3 @@ def export_results(project_id, limit, path=OUTPUT):
     with open(path, "w".encode("utf-8")) as f:
         json_string = json.dumps([ob.__dict__ for ob in runs])
         f.write(json_string)
-
