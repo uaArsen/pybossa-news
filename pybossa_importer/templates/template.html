@@ -15,35 +15,23 @@
   </div>
 <script type="text/javascript">
 (function() {
-    // Your JavaScript code
     pybossa.taskLoaded(function(task, deferred){
-      document.getElementById("title").innerHTML = task.info.title;
-      document.getElementById("text").innerHTML = task.info.text;
-      document.getElementById("question").innerHTML = task.info.question;
-      $('.btn-answer').off('click').on('click', function(evt) {
-            var answer = $(evt.target).attr("value");
-            if (typeof answer != 'undefined') {
-                console.log(task);
-              	console.log(task.id)
-                pybossa.saveTask(task.id, answer).done(function() {
-                    deferred.resolve();
-
-                });
-              location.reload();
-
-
-            }
-            else {
-                $("#error").show();
-            }
+           	deferred.resolve(task);
         });
 
-    });
-
     pybossa.presentTask(function(task, deferred){
-
+	 $("#title").html(task.info.title);
+   	 $("#text").html(task.info.text);
+     $("#question").html(task.info.question);
+     $('.btn-answer').off('click').on('click', function(evt) {
+            var answer = $(evt.target).attr("value");
+            if (typeof answer != 'undefined') {
+                pybossa.saveTask(task.id, answer).done(function() {
+                    deferred.resolve(task);
+                });
+            }
+     	});
     });
-
     pybossa.run('news-tonality');
 })();
 </script>
